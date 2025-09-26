@@ -1,10 +1,272 @@
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lincoln Stoll</title>
-  </head>
-  <body>
-    <p>
-      Nothing to see here...
-    </p>
-  </body>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #666666;
+            --border-color: #e0e0e0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #000000;
+                --text-color: #ffffff;
+                --accent-color: #999999;
+                --border-color: #333333;
+            }
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            letter-spacing: -0.02em;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            text-decoration: none;
+            color: var(--accent-color);
+            transition: all 0.2s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-link:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            transform: translateY(-2px);
+        }
+
+        .email {
+            font-size: 1rem;
+            color: var(--accent-color);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        .email a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .email a:hover {
+            color: var(--text-color);
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .social-links {
+                gap: 1.5rem;
+            }
+
+            .social-link {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lincoln Stoll</h1>
+
+        <div class="social-links">
+            <a href="https://github.com/lstoll" class="social-link" aria-label="GitHub">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+
+            <a href="https://tinnies.club/@lstoll" class="social-link" aria-label="Mastodon">
+                <svg width="20" height="20" viewBox="-10 -5 1034 1034" fill="currentColor">
+                    <path d="M499 112q-93 1 -166 11q-81 11 -128 33l-14 8q-16 10 -32 25q-22 21 -38 47q-21 33 -32 73q-14 47 -14 103v37q0 77 1 119q3 113 18 188q19 95 62 154q50 67 134 89q109 29 210 24q46 -3 88 -12q30 -7 55 -17l19 -8l-4 -75l-22 6q-28 6 -57 10q-41 6 -78 4q-53 -1 -80 -7 q-43 -8 -67 -30q-29 -25 -35 -72q-2 -14 -2 -29l25 6q31 6 65 10q48 7 93 9q42 2 92 -2q32 -2 88 -9t107 -30q49 -23 81.5 -54.5t38.5 -63.5q9 -45 13 -109q4 -46 5 -97v-41q0 -56 -14 -103q-11 -40 -32 -73q-16 -26 -38 -47q-15 -15 -32 -25q-12 -8 -14 -8 q-46 -22 -127 -33q-74 -10 -166 -11h-3zM367 267q73 0 109 56l24 39l24 -39q36 -56 109 -56q63 0 101 43t38 117v239h-95v-232q0 -74 -61 -74q-69 0 -69 88v127h-94v-127q0 -88 -69 -88q-61 0 -61 74v232h-95v-239q0 -74 38 -117t101 -43z"/>
+                </svg>
+            </a>
+
+            <a href="https://bsky.app/profile/lds.li" class="social-link" aria-label="Bluesky">
+                <svg width="20" height="20" viewBox="0 0 600 530" fill="currentColor">
+                    <path d="M135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"/>
+                </svg>
+            </a>
+
+            <a href="https://linkedin.com/in/lstoll" class="social-link" aria-label="LinkedIn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+            </a>
+
+            <a href="https://twitter.com/lstoll" class="social-link" aria-label="Twitter">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="email">
+            <a id="email-link" href="#" class="email-link">email (loading...)</a>
+        </div>
+    </div>
+
+    <script>
+        const encryptedEmail = '793589552319b90eb71caf011b7e060af55cd8528def478b60ff81a0c6756eca5d95ada27a';
+        const challenge = '84f3edacb123f783';
+        const difficulty = 3;
+        const targetPrefix = '0'.repeat(difficulty);
+
+        async function revealEmail() {
+            try {
+                let keyString = '';
+
+                for (let i = 0; ; i++) {
+                    const currentKey = i.toString();
+                    const hashInput = challenge + currentKey;
+                    const hash = await sha256(hashInput);
+
+                    if (hash.startsWith(targetPrefix)) {
+                        keyString = currentKey;
+                        break;
+                    }
+                }
+
+                const keyHash = await sha256(keyString);
+                const keyBytes = hexToBytes(keyHash);
+                const encryptedBytes = hexToBytes(encryptedEmail);
+                const nonce = encryptedBytes.slice(0, 12);
+                const ciphertext = encryptedBytes.slice(12);
+
+                const cryptoKey = await crypto.subtle.importKey(
+                    'raw',
+                    keyBytes,
+                    { name: 'AES-GCM' },
+                    false,
+                    ['decrypt']
+                );
+
+                const decryptedBytes = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: nonce },
+                    cryptoKey,
+                    ciphertext
+                );
+
+                const decryptedEmail = new TextDecoder().decode(decryptedBytes);
+
+                return decryptedEmail;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function setupEmail() {
+            const element = document.getElementById('email-link');
+            revealEmail().then(email => {
+                if (!email) {
+                    element.textContent = 'email (unavailable)';
+                    element.removeAttribute('href');
+                    element.addEventListener('click', event => event.preventDefault());
+                    return;
+                }
+
+                element.textContent = email;
+                element.href = `mailto:${email}`;
+
+                element.addEventListener('click', event => {
+                    event.preventDefault();
+                    copyEmail(email, element);
+                });
+            });
+        }
+
+        function copyEmail(email, element) {
+            const original = element.textContent;
+
+            function showCopied() {
+                element.textContent = 'copied';
+                setTimeout(() => {
+                    element.textContent = original;
+                }, 1000);
+            }
+
+            navigator.clipboard.writeText(email)
+                .then(showCopied)
+                .catch(() => {
+                    const temp = document.createElement('textarea');
+                    temp.value = email;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+                    showCopied();
+                });
+        }
+
+        if (document.readyState !== 'loading') {
+            setupEmail();
+        } else {
+            document.addEventListener('DOMContentLoaded', setupEmail);
+        }
+
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function hexToBytes(hex) {
+            const bytes = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < hex.length; i += 2) {
+                bytes[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+            }
+            return bytes;
+        }
+    </script>
+</body>
 </html>
