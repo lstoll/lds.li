@@ -45,10 +45,29 @@
             width: 100%;
         }
 
+        .name-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .avatar:hover {
+            transform: translateY(-2px);
+        }
+
         h1 {
             font-size: 2.5rem;
             font-weight: 300;
-            margin-bottom: 3rem;
             letter-spacing: -0.02em;
         }
 
@@ -98,12 +117,27 @@
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .name-section {
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .avatar {
+                width: 50px;
+                height: 50px;
+            }
+
             h1 {
                 font-size: 2rem;
             }
 
             .social-links {
                 gap: 1.5rem;
+                margin-bottom: 2rem;
             }
 
             .social-link {
@@ -111,12 +145,19 @@
                 height: 44px;
                 font-size: 1.1rem;
             }
+
+            .email {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Lincoln Stoll</h1>
+        <div class="name-section">
+            <img src="https://www.gravatar.com/avatar/aa59514a1c46fccc744f87b795654943b0d23e9fd1b28bbdba2e2e96ac33d877?s=120&d=identicon" alt="Lincoln Stoll" title="Lincoln Stoll" class="avatar">
+            <h1>Lincoln Stoll</h1>
+        </div>
 
         <div class="social-links">
             <a href="https://github.com/lstoll" class="social-link" aria-label="GitHub">
