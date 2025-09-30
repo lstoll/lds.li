@@ -6,41 +6,18 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"flag"
-	"fmt"
 	"io"
-	"os"
 	"strconv"
 )
 
-func main() {
-	difficulty := flag.Int("difficulty", 3, "Number of leading zeros required")
-	flag.Parse()
-
-	if flag.NArg() == 0 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [flags] <email>\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "Flags:\n")
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-
-	email := flag.Arg(0)
-
-	challenge := generateChallenge()
-	key := findProofOfWorkKey(challenge, *difficulty)
-	encryptedEmail := encryptEmail(email, key)
-
-	fmt.Printf("Found key: %s\n", key)
-	fmt.Printf("Challenge: %s\n", challenge)
-	fmt.Printf("Hash: %s\n", generateHash(challenge+key))
-	fmt.Printf("\nEncrypted email: %s\n", encryptedEmail)
-
-	fmt.Printf("\nFor JavaScript:\n")
-	fmt.Printf("const encryptedEmail = '%s';\n", encryptedEmail)
-	fmt.Printf("const challenge = '%s';\n", challenge)
-	fmt.Printf("const difficulty = %d;\n", *difficulty)
+// EmailData represents the data needed for email encryption
+type EmailData struct {
+	EncryptedEmail string
+	Challenge      string
+	Difficulty     int
 }
 
+// generateChallenge creates a random challenge string
 func generateChallenge() string {
 	b := make([]byte, 8)
 	if _, err := rand.Read(b); err != nil {
@@ -49,6 +26,7 @@ func generateChallenge() string {
 	return hex.EncodeToString(b)
 }
 
+// findProofOfWorkKey finds a key that produces a hash with the required difficulty
 func findProofOfWorkKey(challenge string, difficulty int) string {
 	targetPrefix := ""
 	for range difficulty {
@@ -64,11 +42,13 @@ func findProofOfWorkKey(challenge string, difficulty int) string {
 	}
 }
 
+// generateHash creates a SHA256 hash of the input string
 func generateHash(input string) string {
 	hash := sha256.Sum256([]byte(input))
 	return hex.EncodeToString(hash[:])
 }
 
+// encryptEmail encrypts an email using AES-GCM
 func encryptEmail(email string, key string) string {
 	keyHash := sha256.Sum256([]byte(key))
 
@@ -89,4 +69,17 @@ func encryptEmail(email string, key string) string {
 
 	ciphertext := gcm.Seal(nonce, nonce, []byte(email), nil)
 	return hex.EncodeToString(ciphertext)
+}
+
+// generateEmailData creates encrypted email data for the template
+func generateEmailData(email string) EmailData {
+	challenge := generateChallenge()
+	key := findProofOfWorkKey(challenge, 3)
+	encryptedEmail := encryptEmail(email, key)
+
+	return EmailData{
+		EncryptedEmail: encryptedEmail,
+		Challenge:      challenge,
+		Difficulty:     3,
+	}
 }

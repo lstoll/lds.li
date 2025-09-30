@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lincoln Stoll</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="alternate" type="application/atom+xml" title="Lincoln Stoll" href="feed.xml">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="alternate" type="application/atom+xml" title="Lincoln Stoll" href="/static/feed.xml">
     <style>
         * {
             margin: 0;
@@ -199,9 +199,9 @@
     </div>
 
     <script>
-        const encryptedEmail = '793589552319b90eb71caf011b7e060af55cd8528def478b60ff81a0c6756eca5d95ada27a';
-        const challenge = '84f3edacb123f783';
-        const difficulty = 3;
+        const encryptedEmail = '{{.EncryptedEmail}}';
+        const challenge = '{{.Challenge}}';
+        const difficulty = {{.Difficulty}};
         const targetPrefix = '0'.repeat(difficulty);
 
         async function revealEmail() {
