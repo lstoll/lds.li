@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"lds.li/web/proxyhdrs"
 	"lds.li/web/requestlog"
 )
 
@@ -68,9 +69,12 @@ func main() {
 		}
 	})
 
+	ipmw := proxyhdrs.RemoteIP{
+		ForwardedIPHeader: proxyhdrs.ForwardedIPHeaderFlyClientIP,
+	}
 	server := &http.Server{
 		Addr:    ":8080",
-		Handler: logh.Handler(mux),
+		Handler: ipmw.Handle(logh.Handler(mux)),
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
