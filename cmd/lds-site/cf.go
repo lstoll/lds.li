@@ -114,12 +114,27 @@ func doCFDeploy(ctx context.Context, logger *slog.Logger, cfg aws.Config, nameIn
 	}
 
 	codeStr := string(tmplContent)
-	codeStr = strings.Replace(codeStr, "var moduleRegistry = {}; // %%MODULES_JSON%%", "var moduleRegistry = "+string(modJSON)+";", 1)
-	codeStr = strings.Replace(codeStr, "var webfingerRegistry = {}; // %%WEBFINGER_JSON%%", "var webfingerRegistry = "+string(wfJSON)+";", 1)
-	codeStr = strings.Replace(codeStr, "var email = \"\"; // %%EMAIL%%", "var email = \""+emailAddr+"\";", 1)
-	codeStr = strings.Replace(codeStr, "var canonicalHost = \"\"; // %%CANONICAL_HOST%%", "var canonicalHost = \""+siteCfg.CanonicalHost+"\";", 1)
 
-	functionCode := []byte(codeStr)
+	// Generate vars block
+	var sb strings.Builder
+	sb.WriteString("/* START VARS */\n")
+	sb.WriteString(fmt.Sprintf("var moduleRegistry = %s;\n", string(modJSON)))
+	sb.WriteString(fmt.Sprintf("var webfingerRegistry = %s;\n", string(wfJSON)))
+	sb.WriteString(fmt.Sprintf("var email = \"%s\";\n", emailAddr))
+	sb.WriteString(fmt.Sprintf("var canonicalHost = \"%s\";\n", siteCfg.CanonicalHost))
+	sb.WriteString("/* END VARS */")
+
+	// Replace the block
+	startMarker := "/* START VARS */"
+	endMarker := "/* END VARS */"
+	startIndex := strings.Index(codeStr, startMarker)
+	endIndex := strings.Index(codeStr, endMarker)
+
+	if startIndex == -1 || endIndex == -1 || startIndex >= endIndex {
+		return fmt.Errorf("failed to find vars block in template")
+	}
+
+	functionCode := []byte(codeStr[:startIndex] + sb.String() + codeStr[endIndex+len(endMarker):])
 
 	client := cloudfront.NewFromConfig(cfg)
 

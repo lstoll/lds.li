@@ -1,14 +1,16 @@
+// Configuration injected by deployment tool
+/* START VARS */
+var moduleRegistry = {};
+var webfingerRegistry = {};
+var email = "";
+var canonicalHost = "";
+/* END VARS */
+
 function handler(event) {
     var request = event.request;
     var headers = request.headers;
     var host = headers.host.value;
     var uri = request.uri;
-
-    // Configuration injected by deployment tool
-    var moduleRegistry = {}; // %%MODULES_JSON%%
-    var webfingerRegistry = {}; // %%WEBFINGER_JSON%%
-    var email = ""; // %%EMAIL%%
-    var canonicalHost = ""; // %%CANONICAL_HOST%%
 
     // 1. Canonical Host Redirect
     if (host !== canonicalHost) {
