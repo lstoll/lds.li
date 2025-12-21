@@ -14,6 +14,7 @@ func runDeployAll(ctx context.Context, logger *slog.Logger, args []string) {
 	bucket := fs.String("bucket", "", "S3 bucket name")
 	dir := fs.String("dir", "build", "Directory to sync")
 	generate := fs.Bool("generate", true, "Generate site before syncing")
+	distributionID := fs.String("distribution-id", "", "CloudFront distribution ID to invalidate")
 	
 	// CF Deploy Flags
 	functionARN := fs.String("function-arn", "", "CloudFront Function Name or ARN (must exist)")
@@ -55,7 +56,7 @@ func runDeployAll(ctx context.Context, logger *slog.Logger, args []string) {
 
 	// Run Sync
 	logger.Info("Starting Site Sync...")
-	if err := doSync(ctx, logger, cfg, *bucket, *dir, *generate, *emailAddr); err != nil {
+	if err := doSync(ctx, logger, cfg, *bucket, *dir, *generate, *emailAddr, *distributionID); err != nil {
 		logger.Error("Sync failed", "error", err)
 		os.Exit(1)
 	}

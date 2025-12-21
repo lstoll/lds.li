@@ -11,6 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.93.2
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.5
 	golang.org/x/oauth2 v0.33.0
+	gopkg.in/yaml.v3 v3.0.1
 	lds.li/oauth2ext v0.0.0-20251204000024-beb77293370f
 )
 
@@ -32,5 +33,4 @@ require (
 	github.com/tink-crypto/tink-go/v2 v2.5.0 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

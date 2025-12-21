@@ -10,9 +10,11 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudfront"
+	"github.com/aws/aws-sdk-go-v2/service/cloudfront/types"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 func runSync(ctx context.Context, logger *slog.Logger, args []string) {
@@ -21,6 +23,7 @@ func runSync(ctx context.Context, logger *slog.Logger, args []string) {
 	dir := fs.String("dir", "build", "Directory to sync")
 	generate := fs.Bool("generate", true, "Generate site before syncing")
 	emailAddr := fs.String("email", os.Getenv("EMAIL_ADDRESS"), "Email address (required if generate is true)")
+	distributionID := fs.String("distribution-id", "", "CloudFront distribution ID to invalidate")
 
 	awsAuth := addAWSAuthFlags(fs)
 
@@ -37,13 +40,13 @@ func runSync(ctx context.Context, logger *slog.Logger, args []string) {
 		os.Exit(1)
 	}
 
-	if err := doSync(ctx, logger, cfg, *bucket, *dir, *generate, *emailAddr); err != nil {
+	if err := doSync(ctx, logger, cfg, *bucket, *dir, *generate, *emailAddr, *distributionID); err != nil {
 		logger.Error("Sync failed", "error", err)
 		os.Exit(1)
 	}
 }
 
-func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, dir string, generate bool, emailAddr string) error {
+func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, dir string, generate bool, emailAddr, distributionID string) error {
 	if bucket == "" {
 		return fmt.Errorf("bucket name is required")
 	}
@@ -77,6 +80,8 @@ func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, di
 			existingObjects[*obj.Key] = true
 		}
 	}
+
+	var invalidatedPaths []string
 
 	walker := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -114,6 +119,7 @@ func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, di
 		if err != nil {
 			return err
 		}
+		invalidatedPaths = append(invalidatedPaths, "/"+key)
 		return nil
 	}
 
@@ -124,10 +130,11 @@ func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, di
 	// Prune removed files
 	if len(existingObjects) > 0 {
 		logger.Info("Pruning removed files", "count", len(existingObjects))
-		var toDelete []types.ObjectIdentifier
+		var toDelete []s3types.ObjectIdentifier
 		for key := range existingObjects {
 			logger.Info("Deleting", "key", key)
-			toDelete = append(toDelete, types.ObjectIdentifier{Key: aws.String(key)})
+			toDelete = append(toDelete, s3types.ObjectIdentifier{Key: aws.String(key)})
+			invalidatedPaths = append(invalidatedPaths, "/"+key)
 		}
 
 		// Batch delete (max 1000 per request)
@@ -139,7 +146,7 @@ func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, di
 			batch := toDelete[i:end]
 			_, err := s3Client.DeleteObjects(ctx, &s3.DeleteObjectsInput{
 				Bucket: &bucket,
-				Delete: &types.Delete{
+				Delete: &s3types.Delete{
 					Objects: batch,
 				},
 			})
@@ -147,6 +154,39 @@ func doSync(ctx context.Context, logger *slog.Logger, cfg aws.Config, bucket, di
 				return fmt.Errorf("failed to delete objects: %w", err)
 			}
 		}
+	}
+
+	if distributionID != "" && len(invalidatedPaths) > 0 {
+		logger.Info("Invalidating CloudFront cache", "distribution_id", distributionID, "count", len(invalidatedPaths))
+		cfClient := cloudfront.NewFromConfig(cfg)
+		// CloudFront limits invalidation paths to 3000.
+		// If we have more, we'll batch them.
+		const batchSize = 3000
+		for i := 0; i < len(invalidatedPaths); i += batchSize {
+			end := i + batchSize
+			if end > len(invalidatedPaths) {
+				end = len(invalidatedPaths)
+			}
+			batch := invalidatedPaths[i:end]
+			
+			// Reference ID for the invalidation batch
+			callerRef := fmt.Sprintf("sync-invalidation-%d-%d", os.Getpid(), i)
+
+			_, err := cfClient.CreateInvalidation(ctx, &cloudfront.CreateInvalidationInput{
+				DistributionId: &distributionID,
+				InvalidationBatch: &types.InvalidationBatch{
+					CallerReference: &callerRef,
+					Paths: &types.Paths{
+						Quantity: aws.Int32(int32(len(batch))),
+						Items:    batch,
+					},
+				},
+			})
+			if err != nil {
+				return fmt.Errorf("failed to create invalidation: %w", err)
+			}
+		}
+		logger.Info("Invalidation created")
 	}
 
 	logger.Info("Sync complete")
