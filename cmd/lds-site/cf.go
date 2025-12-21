@@ -75,9 +75,6 @@ func runCFDeploy(ctx context.Context, logger *slog.Logger, args []string) {
 }
 
 func doCFDeploy(ctx context.Context, logger *slog.Logger, cfg aws.Config, nameInput, stage, emailAddr, configFile string, runTests bool) error {
-	if nameInput == "" {
-		return context.DeadlineExceeded // Just a placeholder error? No, fmt.Errorf
-	}
 	// Better check empty string before calling if possible, but here:
 	if nameInput == "" {
 		return fmt.Errorf("function name or ARN is required")

@@ -59,8 +59,7 @@ function handler(event) {
             };
         }
         
-        // If not found, fall through or return 404? 
-        // For now, if we don't match, maybe we should return 404.
+        // If not found, return 404.
         return {
             statusCode: 404,
             statusDescription: "Not Found",
@@ -75,16 +74,6 @@ function handler(event) {
     }
 
     // 3. Go Modules
-    // Check if URI matches any module path prefix
-    // moduleRegistry keys are like "oauth2ext" (from map key) or I can just iterate values.
-    // The registry structure is map[string]ModuleInfo.
-
-    // We need to match against the module path.
-    // URI: /oauth2ext/...
-
-    // Sort keys by length desc to match most specific first?
-    // In this case, keys are short names.
-
     for (var key in moduleRegistry) {
         if (Object.prototype.hasOwnProperty.call(moduleRegistry, key)) {
             var mod = moduleRegistry[key];

@@ -126,7 +126,7 @@ func Suite(email string) []TestCase {
 					return fmt.Errorf("expected status 302, got %d", resp.StatusCode)
 				}
 				loc := resp.Headers["location"].Value
-				// Exact match or prefix match? Config says https://pkg.go.dev/lds.li/oauth2ext
+				// Verify redirect target matches the configured URL
 				if loc != "https://pkg.go.dev/lds.li/oauth2ext" {
 					return fmt.Errorf("unexpected location: %s", loc)
 				}
