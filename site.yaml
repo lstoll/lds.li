@@ -1,0 +1,15 @@
+canonical_host: lds.li
+modules:
+  oauth2ext:
+    path: lds.li/oauth2ext
+    git_url: https://github.com/lstoll/oauth2ext
+  web:
+    path: lds.li/web
+    git_url: https://github.com/lstoll/web
+  oidccli:
+    path: lds.li/oidccli
+    git_url: https://github.com/lstoll/oidccli
+    redirect_to: https://github.com/lstoll/oidccli
+webfinger:
+  - rel: http://openid.net/specs/connect/1.0/issuer
+    href: https://id.lds.li

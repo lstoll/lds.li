@@ -1,4 +1,4 @@
-package main
+package email
 
 import (
 	"crypto/aes"
@@ -10,11 +10,24 @@ import (
 	"strconv"
 )
 
-// EmailData represents the data needed for email encryption
-type EmailData struct {
+// Data represents the data needed for email encryption
+type Data struct {
 	EncryptedEmail string
 	Challenge      string
 	Difficulty     int
+}
+
+// GenerateData creates encrypted email data for the template
+func GenerateData(email string) Data {
+	challenge := generateChallenge()
+	key := findProofOfWorkKey(challenge, 3)
+	encryptedEmail := encryptEmail(email, key)
+
+	return Data{
+		EncryptedEmail: encryptedEmail,
+		Challenge:      challenge,
+		Difficulty:     3,
+	}
 }
 
 // generateChallenge creates a random challenge string
@@ -69,17 +82,4 @@ func encryptEmail(email string, key string) string {
 
 	ciphertext := gcm.Seal(nonce, nonce, []byte(email), nil)
 	return hex.EncodeToString(ciphertext)
-}
-
-// generateEmailData creates encrypted email data for the template
-func generateEmailData(email string) EmailData {
-	challenge := generateChallenge()
-	key := findProofOfWorkKey(challenge, 3)
-	encryptedEmail := encryptEmail(email, key)
-
-	return EmailData{
-		EncryptedEmail: encryptedEmail,
-		Challenge:      challenge,
-		Difficulty:     3,
-	}
 }
