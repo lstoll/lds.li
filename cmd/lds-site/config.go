@@ -9,7 +9,7 @@ import (
 type SiteConfig struct {
 	CanonicalHost string                  `yaml:"canonical_host"`
 	Modules       map[string]ModuleConfig `yaml:"modules"`
-	Webfinger     []WebfingerLink         `yaml:"webfinger"`
+	Webfinger     map[string][]WebfingerLink `yaml:"webfinger"`
 }
 
 // ModuleConfig represents metadata for a Go module

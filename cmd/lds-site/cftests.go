@@ -56,7 +56,7 @@ type Body struct {
 }
 
 // Suite returns the list of tests to run
-func Suite() []TestCase {
+func Suite(email string) []TestCase {
 	return []TestCase{
 		{
 			Name: "Canonical Host Redirect",
@@ -79,6 +79,9 @@ func Suite() []TestCase {
 			Request: Request{
 				URI:  "/.well-known/webfinger",
 				Host: testCanonicalSite,
+				Querystring: map[string]string{
+					"resource": "acct:" + email,
+				},
 			},
 			Validator: func(resp Response) error {
 				if resp.StatusCode != 200 {
@@ -87,8 +90,8 @@ func Suite() []TestCase {
 				if resp.Headers["content-type"].Value != "application/json" {
 					return fmt.Errorf("expected json content type")
 				}
-				if resp.Body == nil || !strings.Contains(resp.Body.Data, "acct:") {
-					return fmt.Errorf("expected webfinger body")
+				if resp.Body == nil || !strings.Contains(resp.Body.Data, "acct:"+email) {
+					return fmt.Errorf("expected webfinger body to contain email")
 				}
 				return nil
 			},
@@ -164,8 +167,8 @@ func Suite() []TestCase {
 }
 
 // Run executes the tests against the specified CloudFront Function
-func RunTests(ctx context.Context, client *cloudfront.Client, name, etag string, logger *slog.Logger) error {
-	tests := Suite()
+func RunTests(ctx context.Context, client *cloudfront.Client, name, etag, email string, logger *slog.Logger) error {
+	tests := Suite(email)
 	failed := 0
 
 	for _, tc := range tests {

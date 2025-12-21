@@ -95,7 +95,17 @@ func doCFDeploy(ctx context.Context, logger *slog.Logger, cfg aws.Config, nameIn
 
 	// Prepare Code
 	modJSON, _ := json.Marshal(siteCfg.Modules)
-	wfJSON, _ := json.Marshal(siteCfg.Webfinger)
+	
+	// Process Webfinger: replace %%EMAIL%% key with actual email
+	processedWebfinger := make(map[string][]WebfingerLink)
+	for k, v := range siteCfg.Webfinger {
+		if k == "%%EMAIL%%" {
+			processedWebfinger[emailAddr] = v
+		} else {
+			processedWebfinger[k] = v
+		}
+	}
+	wfJSON, _ := json.Marshal(processedWebfinger)
 
 	// Read template
 	tmplContent, err := os.ReadFile("cmd/lds-site/function.tmpl.js")
@@ -105,7 +115,7 @@ func doCFDeploy(ctx context.Context, logger *slog.Logger, cfg aws.Config, nameIn
 
 	codeStr := string(tmplContent)
 	codeStr = strings.Replace(codeStr, "var moduleRegistry = {}; // %%MODULES_JSON%%", "var moduleRegistry = "+string(modJSON)+";", 1)
-	codeStr = strings.Replace(codeStr, "var webfingerLinks = []; // %%WEBFINGER_JSON%%", "var webfingerLinks = "+string(wfJSON)+";", 1)
+	codeStr = strings.Replace(codeStr, "var webfingerRegistry = {}; // %%WEBFINGER_JSON%%", "var webfingerRegistry = "+string(wfJSON)+";", 1)
 	codeStr = strings.Replace(codeStr, "var email = \"\"; // %%EMAIL%%", "var email = \""+emailAddr+"\";", 1)
 	codeStr = strings.Replace(codeStr, "var canonicalHost = \"\"; // %%CANONICAL_HOST%%", "var canonicalHost = \""+siteCfg.CanonicalHost+"\";", 1)
 
@@ -142,7 +152,7 @@ func doCFDeploy(ctx context.Context, logger *slog.Logger, cfg aws.Config, nameIn
 
 	if runTests {
 		logger.Info("Running tests against DEVELOPMENT stage")
-		if err := RunTests(ctx, client, functionName, *etag, logger); err != nil {
+		if err := RunTests(ctx, client, functionName, *etag, emailAddr, logger); err != nil {
 			return fmt.Errorf("tests failed, aborting deployment: %w", err)
 		}
 		logger.Info("Tests passed")
@@ -165,6 +175,7 @@ func doCFDeploy(ctx context.Context, logger *slog.Logger, cfg aws.Config, nameIn
 func runCFTest(ctx context.Context, logger *slog.Logger, args []string) {
 	fs := flag.NewFlagSet("cf test", flag.ExitOnError)
 	nameInput := fs.String("function-arn", "", "CloudFront Function Name or ARN (must exist)")
+	emailAddr := fs.String("email", os.Getenv("EMAIL_ADDRESS"), "Email address")
 
 	awsAuth := addAWSAuthFlags(fs)
 
@@ -177,6 +188,11 @@ func runCFTest(ctx context.Context, logger *slog.Logger, args []string) {
 
 	if *nameInput == "" {
 		logger.Error("Function name or ARN is required")
+		os.Exit(1)
+	}
+
+	if *emailAddr == "" {
+		logger.Error("Email address is required")
 		os.Exit(1)
 	}
 
@@ -201,7 +217,7 @@ func runCFTest(ctx context.Context, logger *slog.Logger, args []string) {
 		os.Exit(1)
 	}
 
-	if err := RunTests(ctx, client, functionName, *descOut.ETag, logger); err != nil {
+	if err := RunTests(ctx, client, functionName, *descOut.ETag, *emailAddr, logger); err != nil {
 		logger.Error("Tests failed", "error", err)
 		os.Exit(1)
 	}

@@ -6,7 +6,7 @@ function handler(event) {
 
     // Configuration injected by deployment tool
     var moduleRegistry = {}; // %%MODULES_JSON%%
-    var webfingerLinks = []; // %%WEBFINGER_JSON%%
+    var webfingerRegistry = {}; // %%WEBFINGER_JSON%%
     var email = ""; // %%EMAIL%%
     var canonicalHost = ""; // %%CANONICAL_HOST%%
 
@@ -25,23 +25,49 @@ function handler(event) {
     // 2. Webfinger
     if (uri === "/.well-known/webfinger") {
         var query = request.querystring;
-        // Basic implementation: always return the same profile if resource matches or if asked
-        // Ideally check ?resource=acct:email
+        var resource = "";
+        if (query.resource && query.resource.value) {
+            resource = query.resource.value;
+        }
 
-        var response = {
-            subject: "acct:" + email,
-            links: webfingerLinks
-        };
+        // Parse resource to get email (remove acct:)
+        var targetEmail = resource;
+        if (targetEmail.indexOf("acct:") === 0) {
+            targetEmail = targetEmail.substring(5);
+        }
 
+        var links = webfingerRegistry[targetEmail];
+
+        if (links) {
+            var response = {
+                subject: "acct:" + targetEmail,
+                links: links
+            };
+
+            return {
+                statusCode: 200,
+                statusDescription: "OK",
+                headers: {
+                    "content-type": { "value": "application/json" }
+                },
+                body: {
+                    encoding: "text",
+                    data: JSON.stringify(response)
+                }
+            };
+        }
+        
+        // If not found, fall through or return 404? 
+        // For now, if we don't match, maybe we should return 404.
         return {
-            statusCode: 200,
-            statusDescription: "OK",
-            headers: {
-                "content-type": { "value": "application/json" }
+            statusCode: 404,
+            statusDescription: "Not Found",
+             headers: {
+                "content-type": { "value": "text/plain" }
             },
             body: {
                 encoding: "text",
-                data: JSON.stringify(response)
+                data: "Not Found"
             }
         };
     }
