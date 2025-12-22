@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/cloudfront"
@@ -80,7 +81,7 @@ func Suite(email string) []TestCase {
 				URI:  "/.well-known/webfinger",
 				Host: testCanonicalSite,
 				Querystring: map[string]string{
-					"resource": "acct:" + email,
+					"resource": url.QueryEscape("acct:" + email),
 				},
 			},
 			Validator: func(resp Response) error {

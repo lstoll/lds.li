@@ -29,7 +29,7 @@ function handler(event) {
         var query = request.querystring;
         var resource = "";
         if (query.resource && query.resource.value) {
-            resource = query.resource.value;
+            resource = decodeURIComponent(query.resource.value);
         }
 
         // Parse resource to get email (remove acct:)
