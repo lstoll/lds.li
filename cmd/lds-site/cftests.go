@@ -151,6 +151,26 @@ func Suite(email string) []TestCase {
 				return nil
 			},
 		},
+		/*{
+			Name: "Go Module Subdir Meta (go-get=1)",
+			Request: Request{
+				URI:  "/module/submodule",
+				Host: testCanonicalSite,
+				Querystring: map[string]string{
+					"go-get": "1",
+				},
+			},
+			Validator: func(resp Response) error {
+				if resp.StatusCode != 200 {
+					return fmt.Errorf("expected status 200, got %d", resp.StatusCode)
+				}
+				expectedContent := "lds.li//module/submodule git https://github.com//module/submodule tmpsecrets"
+				if resp.Body == nil || !strings.Contains(resp.Body.Data, expectedContent) {
+					return fmt.Errorf("expected go-import meta tag content '%s'", expectedContent)
+				}
+				return nil
+			},
+		},*/
 		{
 			Name: "Pass-through (Static Asset)",
 			Request: Request{

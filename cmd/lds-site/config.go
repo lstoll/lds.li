@@ -7,16 +7,17 @@ import (
 )
 
 type SiteConfig struct {
-	CanonicalHost string                  `yaml:"canonical_host"`
-	Modules       map[string]ModuleConfig `yaml:"modules"`
+	CanonicalHost string                     `yaml:"canonical_host"`
+	Modules       map[string]ModuleConfig    `yaml:"modules"`
 	Webfinger     map[string][]WebfingerLink `yaml:"webfinger"`
 }
 
 // ModuleConfig represents metadata for a Go module
 type ModuleConfig struct {
-	Path       string `yaml:"path" json:"Path"`             // e.g., "lds.li/oauth2ext"
-	GitURL     string `yaml:"git_url" json:"GitURL"`        // e.g., "https://github.com/lstoll/oauth2ext"
+	Path       string `yaml:"path" json:"Path"`              // e.g., "lds.li/oauth2ext"
+	GitURL     string `yaml:"git_url" json:"GitURL"`         // e.g., "https://github.com/lstoll/oauth2ext"
 	RedirectTo string `yaml:"redirect_to" json:"RedirectTo"` // Optional, e.g., "https://github.com/lstoll/oidccli"
+	SubDir     string `yaml:"subdir" json:"SubDir"`          // Optional, e.g. "director" for subdiretory in the repo
 }
 
 // WebfingerLink represents a link in a webfinger response

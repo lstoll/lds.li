@@ -74,10 +74,14 @@ function handler(event) {
     }
 
     // 3. Go Modules
-    for (var key in moduleRegistry) {
-        if (Object.prototype.hasOwnProperty.call(moduleRegistry, key)) {
-            var mod = moduleRegistry[key];
-            var modPath = "/" + key; // e.g. /oauth2ext
+    var keys = Object.keys(moduleRegistry).sort(function(a, b) {
+        return moduleRegistry[b].Path.length - moduleRegistry[a].Path.length;
+    });
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var mod = moduleRegistry[key];
+        var modPath = "/" + key; // e.g. /oauth2ext
 
             // Check if request is for this module (exact or subpath)
             if (uri === modPath || uri.indexOf(modPath + "/") === 0) {
@@ -99,7 +103,13 @@ function handler(event) {
                     html += '<html lang="en">';
                     html += '<head>';
                     html += '<meta charset="UTF-8">';
-                    html += '<meta name="go-import" content="' + mod.Path + ' git ' + mod.GitURL + '">';
+                    
+                    var importContent = mod.Path + ' git ' + mod.GitURL;
+                    if (mod.SubDir) {
+                        importContent += ' ' + mod.SubDir;
+                    }
+                    html += '<meta name="go-import" content="' + importContent + '">';
+                    
                     html += '<meta http-equiv="refresh" content="0; url=' + targetBase + '">';
                     html += '</head>';
                     html += '<body>';
@@ -135,7 +145,6 @@ function handler(event) {
                     }
                 };
             }
-        }
     }
 
     return request;

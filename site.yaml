@@ -17,6 +17,10 @@ modules:
     path: lds.li/passidp
     git_url: https://github.com/lstoll/passidp
     redirect_to: https://github.com/lstoll/passidp
+  keychain:
+    path: lds.li/keychain
+    git_url: https://github.com/lstoll/keychain
+    redirect_to: https://pkg.go.dev/lds.li/keychain?GOOS=darwin
 webfinger:
   "%%EMAIL%%":
     - rel: http://openid.net/specs/connect/1.0/issuer
