@@ -21,6 +21,9 @@ modules:
     path: lds.li/keychain
     git_url: https://github.com/lstoll/keychain
     redirect_to: https://pkg.go.dev/lds.li/keychain?GOOS=darwin
+  netrelay:
+    path: lds.li/netrelay
+    git_url: https://github.com/lstoll/netrelay
 webfinger:
   "%%EMAIL%%":
     - rel: http://openid.net/specs/connect/1.0/issuer
