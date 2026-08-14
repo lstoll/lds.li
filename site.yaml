@@ -1,3 +1,5 @@
+# $schema: ./site.schema.json
+
 canonical_host: lds.li
 modules:
   oauth2ext:

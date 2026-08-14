@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "site.schema.json",
+  "title": "lds.li site configuration",
+  "description": "Configuration for the lds.li static site and CloudFront function.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "canonical_host",
+    "modules",
+    "webfinger"
+  ],
+  "properties": {
+    "canonical_host": {
+      "description": "Canonical hostname for the site.",
+      "type": "string",
+      "minLength": 1
+    },
+    "modules": {
+      "description": "Go modules served by the site, keyed by a short name.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/module"
+      }
+    },
+    "webfinger": {
+      "description": "WebFinger links keyed by account identifier. The %%EMAIL%% key is replaced at deploy time.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/webfingerLink"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "git_url"
+      ],
+      "properties": {
+        "path": {
+          "description": "Canonical Go module path.",
+          "type": "string",
+          "minLength": 1
+        },
+        "git_url": {
+          "description": "URL of the Git repository containing the module.",
+          "type": "string",
+          "format": "uri"
+        },
+        "redirect_to": {
+          "description": "Optional base URL to redirect module requests to instead of pkg.go.dev.",
+          "type": "string",
+          "format": "uri"
+        },
+        "subdir": {
+          "description": "Optional subdirectory containing the module within its repository.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "webfingerLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rel",
+        "href"
+      ],
+      "properties": {
+        "rel": {
+          "description": "WebFinger link relation.",
+          "type": "string",
+          "minLength": 1
+        },
+        "href": {
+          "description": "WebFinger link target.",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}
